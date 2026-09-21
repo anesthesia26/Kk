@@ -21,7 +21,7 @@
         .card {
             background: #ffffff;
             width: 100%;
-            max-width: 850px;
+            max-width: 950px;
             padding: 30px;
             border-radius: 12px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.08);
@@ -95,7 +95,7 @@
         }
         .form-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
             gap: 12px;
             margin-bottom: 15px;
         }
@@ -170,8 +170,16 @@
                     <input type="number" id="driverFee" placeholder="25000">
                 </div>
                 <div class="form-group">
+                    <label for="workerFee">أجور العامل (د.ع)</label>
+                    <input type="number" id="workerFee" placeholder="0">
+                </div>
+                <div class="form-group">
                     <label for="expenses">المصرفيات (د.ع)</label>
                     <input type="number" id="expenses" placeholder="0">
+                </div>
+                <div class="form-group">
+                    <label for="notes">ملاحظات</label>
+                    <input type="text" id="notes" placeholder="أكتب ملاحظتك هنا">
                 </div>
             </div>
             <button id="btnAddRecord">حفظ وإضافة السجل</button>
@@ -184,8 +192,10 @@
                     <th>تاريخ اليوم</th>
                     <th>وارد الحمل</th>
                     <th>أجور السائق</th>
+                    <th>أجور العامل</th>
                     <th>المصرفيات</th>
                     <th>الباقي (الصافي من الوارد)</th>
+                    <th>ملاحظات</th>
                 </tr>
             </thead>
             <tbody id="recordsTable">
@@ -201,7 +211,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // إعدادات Firebase الخاصّة بك
+    // إعدادات Firebase الخاصة بك
     const firebaseConfig = {
         apiKey: "AIzaSyA2C0yByH-GbWw3EJoExeRtZAC4ms9qYmg",
         authDomain: "kkk-op.firebaseapp.com",
@@ -217,7 +227,7 @@
     const db = getFirestore(app);
     const recordsRef = collection(db, "daily_records");
 
-    // مستخدمين النظام بالحسابات الجديدة
+    // مستخدمين النظام
     const users = {
         'mus': { pass: 'mus1122', name: 'حساب المالك (mus)', role: 'owner' },
         'd1': { pass: 'd1', name: 'حساب السائق (d1)', role: 'driver' }
@@ -275,23 +285,31 @@
         const date = document.getElementById('date').value || '-';
         const income = parseFloat(document.getElementById('income').value) || 0;
         const driverFee = parseFloat(document.getElementById('driverFee').value) || 0;
+        const workerFee = parseFloat(document.getElementById('workerFee').value) || 0;
         const expenses = parseFloat(document.getElementById('expenses').value) || 0;
-        const netProfit = income - (driverFee + expenses);
+        const notes = document.getElementById('notes').value.trim() || '-';
+
+        // حساب الصافي: الوارد - (أجور السائق + أجور العامل + المصرفيات)
+        const netProfit = income - (driverFee + workerFee + expenses);
 
         try {
             await addDoc(recordsRef, {
                 date: date,
                 income: income,
                 driverFee: driverFee,
+                workerFee: workerFee,
                 expenses: expenses,
                 netProfit: netProfit,
+                notes: notes,
                 createdAt: serverTimestamp()
             });
 
             // مسح المدخلات بعد النجاح
             document.getElementById('income').value = '';
             document.getElementById('driverFee').value = '';
+            document.getElementById('workerFee').value = '';
             document.getElementById('expenses').value = '';
+            document.getElementById('notes').value = '';
             setTodayDate();
         } catch (e) {
             alert("حدث خطأ أثناء حفظ البيانات: " + e.message);
@@ -308,13 +326,18 @@
 
             snapshot.forEach((doc) => {
                 const data = doc.data();
+                const workerFeeVal = data.workerFee || 0;
+                const notesVal = data.notes || '-';
                 const row = document.createElement('tr');
+                
                 row.innerHTML = `
                     <td>${data.date}</td>
                     <td>${data.income.toLocaleString()}</td>
                     <td>${data.driverFee.toLocaleString()}</td>
+                    <td>${workerFeeVal > 0 ? workerFeeVal.toLocaleString() : 'X'}</td>
                     <td>${data.expenses > 0 ? data.expenses.toLocaleString() : 'X'}</td>
                     <td><strong>${data.netProfit.toLocaleString()}</strong></td>
+                    <td>${notesVal}</td>
                 `;
                 tableBody.appendChild(row);
             });
