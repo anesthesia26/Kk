@@ -12,7 +12,7 @@
         body {
             background-color: #f0f2f5;
             margin: 0;
-            padding: 20px;
+            padding: 10px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -22,7 +22,7 @@
             background: #ffffff;
             width: 100%;
             max-width: 1000px;
-            padding: 30px;
+            padding: 20px;
             border-radius: 12px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.08);
         }
@@ -39,7 +39,7 @@
             border-radius: 20px;
             font-weight: bold;
             display: inline-block;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         .header-container {
             display: flex;
@@ -90,27 +90,26 @@
             padding: 8px 16px;
             font-size: 14px;
         }
-        .btn-logout:hover {
-            background-color: #bd2130;
-        }
         .btn-edit {
             background-color: #ffc107;
             color: #000;
-            padding: 6px 12px;
+            padding: 6px 10px;
             border-radius: 4px;
-            font-size: 13px;
+            font-size: 12px;
             margin-left: 5px;
             width: auto;
             display: inline-block;
+            border: none;
         }
         .btn-delete {
             background-color: #dc3545;
             color: white;
-            padding: 6px 12px;
+            padding: 6px 10px;
             border-radius: 4px;
-            font-size: 13px;
+            font-size: 12px;
             width: auto;
             display: inline-block;
+            border: none;
         }
         .form-grid {
             display: grid;
@@ -118,10 +117,15 @@
             gap: 12px;
             margin-bottom: 15px;
         }
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 15px;
+            min-width: 600px;
         }
         th, td {
             border: 1px solid #e0e0e0;
@@ -141,8 +145,6 @@
             margin-top: 10px;
             display: none;
         }
-
-        /* نافذة التعديل المنبثقة */
         .modal {
             display: none;
             position: fixed;
@@ -150,6 +152,7 @@
             background: rgba(0,0,0,0.5);
             justify-content: center;
             align-items: center;
+            z-index: 1000;
         }
         .modal-content {
             background: #fff;
@@ -164,7 +167,7 @@
 
 <div class="card">
 
-    <!-- ================= 1. واجهة تسجيل الدخول ================= -->
+    <!-- 1. واجهة تسجيل الدخول -->
     <div id="loginSection">
         <h2>تسجيل الدخول للنظام</h2>
         <div class="form-group">
@@ -179,7 +182,7 @@
         <p id="errorMsg" class="error-msg">اسم المستخدم أو كلمة المرور غير صحيحة!</p>
     </div>
 
-    <!-- ================= 2. واجهة التطبيق الرئيسية ================= -->
+    <!-- 2. واجهة التطبيق الرئيسية -->
     <div id="appSection" style="display: none;">
         <div class="header-container">
             <div>
@@ -222,23 +225,25 @@
         </div>
 
         <!-- جدول الحسابات -->
-        <table>
-            <thead>
-                <tr id="tableHeader">
-                    <th>تاريخ اليوم</th>
-                    <th>وارد الحمل</th>
-                    <th>أجور السائق</th>
-                    <th>أجور العامل</th>
-                    <th>المصرفيات</th>
-                    <th>الباقي (الصافي)</th>
-                    <th>ملاحظات</th>
-                    <th id="actionsColHeader" style="display: none;">الإجراءات</th>
-                </tr>
-            </thead>
-            <tbody id="recordsTable">
-                <!-- البيانات تُسحب من Firebase وتظهر هنا -->
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr id="tableHeader">
+                        <th>تاريخ اليوم</th>
+                        <th>وارد الحمل</th>
+                        <th>أجور السائق</th>
+                        <th>أجور العامل</th>
+                        <th>المصرفيات</th>
+                        <th>الباقي (الصافي)</th>
+                        <th>ملاحظات</th>
+                        <th id="actionsColHeader" style="display: none;">الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="recordsTable">
+                    <!-- البيانات تُسحب من Firebase -->
+                </tbody>
+            </table>
+        </div>
     </div>
 
 </div>
@@ -304,10 +309,10 @@
 
             if (currentUser.role === 'owner') {
                 document.getElementById('inputForm').style.display = 'none';
-                document.getElementById('actionsColHeader').style.display = 'table-cell'; // إظهار هيدر الإجراءات للمالك
+                document.getElementById('actionsColHeader').style.display = 'table-cell';
             } else {
                 document.getElementById('inputForm').style.display = 'block';
-                document.getElementById('actionsColHeader').style.display = 'none'; // إخفاءه عن السائق
+                document.getElementById('actionsColHeader').style.display = 'none';
                 setTodayDate();
             }
 
@@ -439,248 +444,6 @@
             alert("حدث خطأ أثناء حفظ التعديل: " + e.message);
         }
     });
-</script>
-
-</body>
-</html>
-            border: 1px solid #e0e0e0;
-            padding: 12px;
-            text-align: center;
-        }
-        th {
-            background-color: #1a73e8;
-            color: white;
-        }
-        tr:nth-child(even) {
-            background-color: #f8f9fa;
-        }
-        .error-msg {
-            color: #d93025;
-            text-align: center;
-            margin-top: 10px;
-            display: none;
-        }
-    </style>
-</head>
-<body>
-
-<div class="card">
-
-    <!-- ================= 1. واجهة تسجيل الدخول ================= -->
-    <div id="loginSection">
-        <h2>تسجيل الدخول للنظام</h2>
-        <div class="form-group">
-            <label for="username">اسم المستخدم:</label>
-            <input type="text" id="username" placeholder="أدخل اسم المستخدم (mus أو d1)">
-        </div>
-        <div class="form-group">
-            <label for="password">كلمة المرور:</label>
-            <input type="password" id="password" placeholder="أدخل كلمة المرور">
-        </div>
-        <button id="btnLogin">دخول</button>
-        <p id="errorMsg" class="error-msg">اسم المستخدم أو كلمة المرور غير صحيحة!</p>
-    </div>
-
-    <!-- ================= 2. واجهة التطبيق الرئيسية ================= -->
-    <div id="appSection" style="display: none;">
-        <div class="header-container">
-            <div>
-                <span id="userBadge" class="user-badge"></span>
-            </div>
-            <button class="btn-logout" id="btnLogout">تسجيل الخروج</button>
-        </div>
-
-        <h3>دفتر حسابات الحمل واليوميات</h3>
-
-        <!-- نموذج إدخال البيانات -->
-        <div id="inputForm">
-            <div class="form-grid">
-                <div class="form-group">
-                    <label for="date">تاريخ اليوم</label>
-                    <input type="text" id="date" placeholder="يتكون تلقائياً">
-                </div>
-                <div class="form-group">
-                    <label for="income">وارد الحمل (د.ع)</label>
-                    <input type="number" id="income" placeholder="100000">
-                </div>
-                <div class="form-group">
-                    <label for="driverFee">أجور السائق (د.ع)</label>
-                    <input type="number" id="driverFee" placeholder="25000">
-                </div>
-                <div class="form-group">
-                    <label for="workerFee">أجور العامل (د.ع)</label>
-                    <input type="number" id="workerFee" placeholder="0">
-                </div>
-                <div class="form-group">
-                    <label for="expenses">المصرفيات (د.ع)</label>
-                    <input type="number" id="expenses" placeholder="0">
-                </div>
-                <div class="form-group">
-                    <label for="notes">ملاحظات</label>
-                    <input type="text" id="notes" placeholder="أكتب ملاحظتك هنا">
-                </div>
-            </div>
-            <button id="btnAddRecord">حفظ وإضافة السجل</button>
-        </div>
-
-        <!-- جدول الحسابات -->
-        <table>
-            <thead>
-                <tr>
-                    <th>تاريخ اليوم</th>
-                    <th>وارد الحمل</th>
-                    <th>أجور السائق</th>
-                    <th>أجور العامل</th>
-                    <th>المصرفيات</th>
-                    <th>الباقي (الصافي من الوارد)</th>
-                    <th>ملاحظات</th>
-                </tr>
-            </thead>
-            <tbody id="recordsTable">
-                <!-- البيانات تُسحب من Firebase وتظهر هنا -->
-            </tbody>
-        </table>
-    </div>
-
-</div>
-
-<!-- Firebase SDKs -->
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-    // إعدادات Firebase الخاصة بك
-    const firebaseConfig = {
-        apiKey: "AIzaSyA2C0yByH-GbWw3EJoExeRtZAC4ms9qYmg",
-        authDomain: "kkk-op.firebaseapp.com",
-        projectId: "kkk-op",
-        storageBucket: "kkk-op.firebasestorage.app",
-        messagingSenderId: "1024514880477",
-        appId: "1:1024514880477:web:0cdd6ba35a20cb78f8bc34",
-        measurementId: "G-T582DHRESH"
-    };
-
-    // تهيئة تطبيق Firebase و Cloud Firestore
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const recordsRef = collection(db, "daily_records");
-
-    // مستخدمين النظام
-    const users = {
-        'mus': { pass: 'mus1122', name: 'حساب المالك (mus)', role: 'owner' },
-        'd1': { pass: 'd1', name: 'حساب السائق (d1)', role: 'driver' }
-    };
-
-    let currentUser = null;
-
-    // تعيين تاريخ اليوم
-    function setTodayDate() {
-        const today = new Date();
-        const day = today.getDate();
-        const month = today.getMonth() + 1;
-        document.getElementById('date').value = `${day}/${month}`;
-    }
-
-    // دالة تسجيل الدخول
-    document.getElementById('btnLogin').addEventListener('click', () => {
-        const userIn = document.getElementById('username').value.trim();
-        const passIn = document.getElementById('password').value.trim();
-        const errorMsg = document.getElementById('errorMsg');
-
-        if (users[userIn] && users[userIn].pass === passIn) {
-            currentUser = users[userIn];
-            errorMsg.style.display = 'none';
-            
-            document.getElementById('loginSection').style.display = 'none';
-            document.getElementById('appSection').style.display = 'block';
-            document.getElementById('userBadge').innerText = currentUser.name;
-
-            if (currentUser.role === 'owner') {
-                document.getElementById('inputForm').style.display = 'none';
-            } else {
-                document.getElementById('inputForm').style.display = 'block';
-                setTodayDate();
-            }
-
-            // الاستماع للبيانات من Firebase عند تسجيل الدخول
-            loadRealtimeData();
-        } else {
-            errorMsg.style.display = 'block';
-        }
-    });
-
-    // تسجيل الخروج
-    document.getElementById('btnLogout').addEventListener('click', () => {
-        currentUser = null;
-        document.getElementById('username').value = '';
-        document.getElementById('password').value = '';
-        document.getElementById('appSection').style.display = 'none';
-        document.getElementById('loginSection').style.display = 'block';
-    });
-
-    // إضافة سجل جديد في Firebase
-    document.getElementById('btnAddRecord').addEventListener('click', async () => {
-        const date = document.getElementById('date').value || '-';
-        const income = parseFloat(document.getElementById('income').value) || 0;
-        const driverFee = parseFloat(document.getElementById('driverFee').value) || 0;
-        const workerFee = parseFloat(document.getElementById('workerFee').value) || 0;
-        const expenses = parseFloat(document.getElementById('expenses').value) || 0;
-        const notes = document.getElementById('notes').value.trim() || '-';
-
-        // حساب الصافي: الوارد - (أجور السائق + أجور العامل + المصرفيات)
-        const netProfit = income - (driverFee + workerFee + expenses);
-
-        try {
-            await addDoc(recordsRef, {
-                date: date,
-                income: income,
-                driverFee: driverFee,
-                workerFee: workerFee,
-                expenses: expenses,
-                netProfit: netProfit,
-                notes: notes,
-                createdAt: serverTimestamp()
-            });
-
-            // مسح المدخلات بعد النجاح
-            document.getElementById('income').value = '';
-            document.getElementById('driverFee').value = '';
-            document.getElementById('workerFee').value = '';
-            document.getElementById('expenses').value = '';
-            document.getElementById('notes').value = '';
-            setTodayDate();
-        } catch (e) {
-            alert("حدث خطأ أثناء حفظ البيانات: " + e.message);
-        }
-    });
-
-    // جلب البيانات وقراءتها لحظياً (Real-time Listener)
-    function loadRealtimeData() {
-        const q = query(recordsRef, orderBy("createdAt", "desc"));
-        
-        onSnapshot(q, (snapshot) => {
-            const tableBody = document.getElementById('recordsTable');
-            tableBody.innerHTML = '';
-
-            snapshot.forEach((doc) => {
-                const data = doc.data();
-                const workerFeeVal = data.workerFee || 0;
-                const notesVal = data.notes || '-';
-                const row = document.createElement('tr');
-                
-                row.innerHTML = `
-                    <td>${data.date}</td>
-                    <td>${data.income.toLocaleString()}</td>
-                    <td>${data.driverFee.toLocaleString()}</td>
-                    <td>${workerFeeVal > 0 ? workerFeeVal.toLocaleString() : 'X'}</td>
-                    <td>${data.expenses > 0 ? data.expenses.toLocaleString() : 'X'}</td>
-                    <td><strong>${data.netProfit.toLocaleString()}</strong></td>
-                    <td>${notesVal}</td>
-                `;
-                tableBody.appendChild(row);
-            });
-        });
-    }
 </script>
 
 </body>
