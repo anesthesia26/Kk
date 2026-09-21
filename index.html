@@ -21,7 +21,7 @@
         .card {
             background: #ffffff;
             width: 100%;
-            max-width: 950px;
+            max-width: 1000px;
             padding: 30px;
             border-radius: 12px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.08);
@@ -93,6 +93,25 @@
         .btn-logout:hover {
             background-color: #bd2130;
         }
+        .btn-edit {
+            background-color: #ffc107;
+            color: #000;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            margin-left: 5px;
+            width: auto;
+            display: inline-block;
+        }
+        .btn-delete {
+            background-color: #dc3545;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            width: auto;
+            display: inline-block;
+        }
         .form-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
@@ -105,6 +124,325 @@
             margin-top: 15px;
         }
         th, td {
+            border: 1px solid #e0e0e0;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #1a73e8;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        .error-msg {
+            color: #d93025;
+            text-align: center;
+            margin-top: 10px;
+            display: none;
+        }
+
+        /* نافذة التعديل المنبثقة */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+
+    <!-- ================= 1. واجهة تسجيل الدخول ================= -->
+    <div id="loginSection">
+        <h2>تسجيل الدخول للنظام</h2>
+        <div class="form-group">
+            <label for="username">اسم المستخدم:</label>
+            <input type="text" id="username" placeholder="أدخل اسم المستخدم (mus أو d1)">
+        </div>
+        <div class="form-group">
+            <label for="password">كلمة المرور:</label>
+            <input type="password" id="password" placeholder="أدخل كلمة المرور">
+        </div>
+        <button id="btnLogin">دخول</button>
+        <p id="errorMsg" class="error-msg">اسم المستخدم أو كلمة المرور غير صحيحة!</p>
+    </div>
+
+    <!-- ================= 2. واجهة التطبيق الرئيسية ================= -->
+    <div id="appSection" style="display: none;">
+        <div class="header-container">
+            <div>
+                <span id="userBadge" class="user-badge"></span>
+            </div>
+            <button class="btn-logout" id="btnLogout">تسجيل الخروج</button>
+        </div>
+
+        <h3>دفتر حسابات الحمل واليوميات</h3>
+
+        <!-- نموذج إدخال البيانات للسائق -->
+        <div id="inputForm">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="date">تاريخ اليوم</label>
+                    <input type="text" id="date" placeholder="يتكون تلقائياً">
+                </div>
+                <div class="form-group">
+                    <label for="income">وارد الحمل (د.ع)</label>
+                    <input type="number" id="income" placeholder="100000">
+                </div>
+                <div class="form-group">
+                    <label for="driverFee">أجور السائق (د.ع)</label>
+                    <input type="number" id="driverFee" placeholder="25000">
+                </div>
+                <div class="form-group">
+                    <label for="workerFee">أجور العامل (د.ع)</label>
+                    <input type="number" id="workerFee" placeholder="0">
+                </div>
+                <div class="form-group">
+                    <label for="expenses">المصرفيات (د.ع)</label>
+                    <input type="number" id="expenses" placeholder="0">
+                </div>
+                <div class="form-group">
+                    <label for="notes">ملاحظات</label>
+                    <input type="text" id="notes" placeholder="أكتب ملاحظتك هنا">
+                </div>
+            </div>
+            <button id="btnAddRecord">حفظ وإضافة السجل</button>
+        </div>
+
+        <!-- جدول الحسابات -->
+        <table>
+            <thead>
+                <tr id="tableHeader">
+                    <th>تاريخ اليوم</th>
+                    <th>وارد الحمل</th>
+                    <th>أجور السائق</th>
+                    <th>أجور العامل</th>
+                    <th>المصرفيات</th>
+                    <th>الباقي (الصافي)</th>
+                    <th>ملاحظات</th>
+                    <th id="actionsColHeader" style="display: none;">الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody id="recordsTable">
+                <!-- البيانات تُسحب من Firebase وتظهر هنا -->
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<!-- نافذة التعديل للمالك -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <h3>تعديل السجل</h3>
+        <input type="hidden" id="editDocId">
+        <div class="form-group"><label>تاريخ اليوم</label><input type="text" id="editDate"></div>
+        <div class="form-group"><label>وارد الحمل</label><input type="number" id="editIncome"></div>
+        <div class="form-group"><label>أجور السائق</label><input type="number" id="editDriverFee"></div>
+        <div class="form-group"><label>أجور العامل</label><input type="number" id="editWorkerFee"></div>
+        <div class="form-group"><label>المصرفيات</label><input type="number" id="editExpenses"></div>
+        <div class="form-group"><label>ملاحظات</label><input type="text" id="editNotes"></div>
+        <button id="btnSaveEdit" style="margin-bottom: 10px;">حفظ التعديلات</button>
+        <button id="btnCancelEdit" style="background-color: #6c757d;">إلغاء</button>
+    </div>
+</div>
+
+<!-- Firebase SDKs -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyA2C0yByH-GbWw3EJoExeRtZAC4ms9qYmg",
+        authDomain: "kkk-op.firebaseapp.com",
+        projectId: "kkk-op",
+        storageBucket: "kkk-op.firebasestorage.app",
+        messagingSenderId: "1024514880477",
+        appId: "1:1024514880477:web:0cdd6ba35a20cb78f8bc34",
+        measurementId: "G-T582DHRESH"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const recordsRef = collection(db, "daily_records");
+
+    const users = {
+        'mus': { pass: 'mus1122', name: 'حساب المالك (mus)', role: 'owner' },
+        'd1': { pass: 'd1', name: 'حساب السائق (d1)', role: 'driver' }
+    };
+
+    let currentUser = null;
+
+    function setTodayDate() {
+        const today = new Date();
+        document.getElementById('date').value = `${today.getDate()}/${today.getMonth() + 1}`;
+    }
+
+    // تسجيل الدخول
+    document.getElementById('btnLogin').addEventListener('click', () => {
+        const userIn = document.getElementById('username').value.trim();
+        const passIn = document.getElementById('password').value.trim();
+
+        if (users[userIn] && users[userIn].pass === passIn) {
+            currentUser = users[userIn];
+            document.getElementById('errorMsg').style.display = 'none';
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('appSection').style.display = 'block';
+            document.getElementById('userBadge').innerText = currentUser.name;
+
+            if (currentUser.role === 'owner') {
+                document.getElementById('inputForm').style.display = 'none';
+                document.getElementById('actionsColHeader').style.display = 'table-cell'; // إظهار هيدر الإجراءات للمالك
+            } else {
+                document.getElementById('inputForm').style.display = 'block';
+                document.getElementById('actionsColHeader').style.display = 'none'; // إخفاءه عن السائق
+                setTodayDate();
+            }
+
+            loadRealtimeData();
+        } else {
+            document.getElementById('errorMsg').style.display = 'block';
+        }
+    });
+
+    // تسجيل الخروج
+    document.getElementById('btnLogout').addEventListener('click', () => {
+        currentUser = null;
+        document.getElementById('username').value = '';
+        document.getElementById('password').value = '';
+        document.getElementById('appSection').style.display = 'none';
+        document.getElementById('loginSection').style.display = 'block';
+    });
+
+    // إضافة سجل جديد (السائق)
+    document.getElementById('btnAddRecord').addEventListener('click', async () => {
+        const date = document.getElementById('date').value || '-';
+        const income = parseFloat(document.getElementById('income').value) || 0;
+        const driverFee = parseFloat(document.getElementById('driverFee').value) || 0;
+        const workerFee = parseFloat(document.getElementById('workerFee').value) || 0;
+        const expenses = parseFloat(document.getElementById('expenses').value) || 0;
+        const notes = document.getElementById('notes').value.trim() || '-';
+        const netProfit = income - (driverFee + workerFee + expenses);
+
+        try {
+            await addDoc(recordsRef, {
+                date, income, driverFee, workerFee, expenses, netProfit, notes,
+                createdAt: serverTimestamp()
+            });
+
+            document.getElementById('income').value = '';
+            document.getElementById('driverFee').value = '';
+            document.getElementById('workerFee').value = '';
+            document.getElementById('expenses').value = '';
+            document.getElementById('notes').value = '';
+            setTodayDate();
+        } catch (e) {
+            alert("حدث خطأ أثناء حفظ البيانات: " + e.message);
+        }
+    });
+
+    // جلب البيانات وقراءتها لحظياً
+    function loadRealtimeData() {
+        const q = query(recordsRef, orderBy("createdAt", "desc"));
+        
+        onSnapshot(q, (snapshot) => {
+            const tableBody = document.getElementById('recordsTable');
+            tableBody.innerHTML = '';
+
+            snapshot.forEach((docSnapshot) => {
+                const data = docSnapshot.data();
+                const id = docSnapshot.id;
+                const row = document.createElement('tr');
+                
+                let actionsTd = '';
+                if (currentUser && currentUser.role === 'owner') {
+                    actionsTd = `
+                        <td>
+                            <button class="btn-edit" onclick="openEditModal('${id}', '${data.date}', ${data.income}, ${data.driverFee}, ${data.workerFee || 0}, ${data.expenses}, '${data.notes || ''}')">تعديل</button>
+                            <button class="btn-delete" onclick="deleteRecord('${id}')">حذف</button>
+                        </td>
+                    `;
+                }
+
+                row.innerHTML = `
+                    <td>${data.date}</td>
+                    <td>${data.income.toLocaleString()}</td>
+                    <td>${data.driverFee.toLocaleString()}</td>
+                    <td>${(data.workerFee || 0) > 0 ? data.workerFee.toLocaleString() : 'X'}</td>
+                    <td>${data.expenses > 0 ? data.expenses.toLocaleString() : 'X'}</td>
+                    <td><strong>${data.netProfit.toLocaleString()}</strong></td>
+                    <td>${data.notes || '-'}</td>
+                    ${actionsTd}
+                `;
+                tableBody.appendChild(row);
+            });
+        });
+    }
+
+    // دالة حذف سجل (للمالك)
+    window.deleteRecord = async (id) => {
+        if (confirm("هل أنت تأكد من إرادتك لحذف هذا السجل؟")) {
+            try {
+                await deleteDoc(doc(db, "daily_records", id));
+            } catch (e) {
+                alert("خطأ أثناء الحذف: " + e.message);
+            }
+        }
+    };
+
+    // فتح نافذة التعديل (للمالك)
+    window.openEditModal = (id, date, income, driverFee, workerFee, expenses, notes) => {
+        document.getElementById('editDocId').value = id;
+        document.getElementById('editDate').value = date;
+        document.getElementById('editIncome').value = income;
+        document.getElementById('editDriverFee').value = driverFee;
+        document.getElementById('editWorkerFee').value = workerFee;
+        document.getElementById('editExpenses').value = expenses;
+        document.getElementById('editNotes').value = notes;
+        document.getElementById('editModal').style.display = 'flex';
+    };
+
+    // إغلاق نافذة التعديل
+    document.getElementById('btnCancelEdit').addEventListener('click', () => {
+        document.getElementById('editModal').style.display = 'none';
+    });
+
+    // حفظ التعديلات في Firebase
+    document.getElementById('btnSaveEdit').addEventListener('click', async () => {
+        const id = document.getElementById('editDocId').value;
+        const date = document.getElementById('editDate').value;
+        const income = parseFloat(document.getElementById('editIncome').value) || 0;
+        const driverFee = parseFloat(document.getElementById('editDriverFee').value) || 0;
+        const workerFee = parseFloat(document.getElementById('editWorkerFee').value) || 0;
+        const expenses = parseFloat(document.getElementById('editExpenses').value) || 0;
+        const notes = document.getElementById('editNotes').value.trim() || '-';
+        const netProfit = income - (driverFee + workerFee + expenses);
+
+        try {
+            await updateDoc(doc(db, "daily_records", id), {
+                date, income, driverFee, workerFee, expenses, netProfit, notes
+            });
+            document.getElementById('editModal').style.display = 'none';
+        } catch (e) {
+            alert("حدث خطأ أثناء حفظ التعديل: " + e.message);
+        }
+    });
+</script>
+
+</body>
+</html>
             border: 1px solid #e0e0e0;
             padding: 12px;
             text-align: center;
