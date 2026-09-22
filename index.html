@@ -22,7 +22,7 @@
             background: #ffffff;
             width: 100%;
             max-width: 1000px;
-            padding: 20px;
+            padding: 15px;
             border-radius: 12px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.08);
         }
@@ -35,35 +35,36 @@
             text-align: center;
             background-color: #e8f0fe;
             color: #1967d2;
-            padding: 8px 15px;
+            padding: 6px 12px;
             border-radius: 20px;
             font-weight: bold;
             display: inline-block;
-            margin-bottom: 15px;
+            font-size: 14px;
         }
         .header-container {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             border-bottom: 2px solid #f0f2f5;
             padding-bottom: 10px;
         }
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
         label {
             display: block;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
             font-weight: 600;
             color: #444;
+            font-size: 14px;
         }
         input {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             border: 1px solid #ccc;
             border-radius: 6px;
-            font-size: 15px;
+            font-size: 14px;
         }
         input:focus {
             outline: none;
@@ -76,7 +77,7 @@
             color: white;
             border: none;
             border-radius: 6px;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: bold;
             cursor: pointer;
             transition: 0.2s;
@@ -87,45 +88,48 @@
         .btn-logout {
             background-color: #dc3545;
             width: auto;
-            padding: 8px 16px;
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+        .btn-pdf {
+            background-color: #28a745;
+            width: 100%;
+            padding: 10px 15px;
             font-size: 14px;
+            margin-bottom: 15px;
         }
         .btn-edit {
             background-color: #ffc107;
             color: #000;
-            padding: 6px 10px;
+            padding: 6px 12px;
             border-radius: 4px;
-            font-size: 12px;
-            margin-left: 5px;
-            width: auto;
-            display: inline-block;
+            font-size: 13px;
             border: none;
+            cursor: pointer;
+            flex: 1;
         }
         .btn-delete {
             background-color: #dc3545;
             color: white;
-            padding: 6px 10px;
+            padding: 6px 12px;
             border-radius: 4px;
-            font-size: 12px;
-            width: auto;
-            display: inline-block;
+            font-size: 13px;
             border: none;
+            cursor: pointer;
+            flex: 1;
         }
         .form-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-            gap: 12px;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
             margin-bottom: 15px;
         }
-        .table-responsive {
-            width: 100%;
-            overflow-x: auto;
-        }
+
+        /* تصميم الجدول للشاشات الكبيرة */
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 15px;
-            min-width: 600px;
         }
         th, td {
             border: 1px solid #e0e0e0;
@@ -139,6 +143,52 @@
         tr:nth-child(even) {
             background-color: #f8f9fa;
         }
+
+        /* تحويل الجدول لبطاقات مخصصة للموبايل */
+        @media screen and (max-width: 768px) {
+            table, thead, tbody, th, td, tr {
+                display: block;
+            }
+            thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+            tr {
+                background: #ffffff;
+                border: 1px solid #e0e0e0;
+                border-radius: 10px;
+                margin-bottom: 12px;
+                padding: 10px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            }
+            td {
+                border: none;
+                border-bottom: 1px solid #f0f2f5;
+                position: relative;
+                padding: 8px 10px;
+                text-align: left;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                font-size: 14px;
+            }
+            td:last-child {
+                border-bottom: none;
+            }
+            td::before {
+                content: attr(data-label);
+                font-weight: bold;
+                color: #1a73e8;
+                text-align: right;
+            }
+            .action-cell {
+                justify-content: gap;
+                gap: 8px;
+                padding-top: 10px;
+            }
+        }
+
         .error-msg {
             color: #d93025;
             text-align: center;
@@ -156,10 +206,38 @@
         }
         .modal-content {
             background: #fff;
-            padding: 25px;
+            padding: 20px;
             border-radius: 8px;
             width: 90%;
             max-width: 500px;
+        }
+
+        /* حقوق التطوير */
+        .footer-credits {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 12px;
+            border-top: 1px dashed #e0e0e0;
+            font-size: 12px;
+            color: #666;
+            direction: ltr;
+        }
+        .footer-credits span {
+            font-weight: bold;
+            color: #1a73e8;
+        }
+
+        /* تنسيق الطباعة والـ PDF */
+        @media print {
+            body { background: #fff; padding: 0; }
+            .card { box-shadow: none; padding: 0; }
+            #inputForm, #loginSection, .btn-logout, .btn-pdf, .action-cell, #actionsColHeader, .footer-credits { display: none !important; }
+            table, thead, tbody, th, td, tr { display: table !important; }
+            thead tr { position: static !important; }
+            tr { border: none !important; box-shadow: none !important; margin: 0 !important; }
+            th, td { display: table-cell !important; border: 1px solid #000 !important; text-align: center !important; }
+            td::before { display: none !important; }
+            th { background-color: #eee !important; color: #000 !important; }
         }
     </style>
 </head>
@@ -224,8 +302,13 @@
             <button id="btnAddRecord">حفظ وإضافة السجل</button>
         </div>
 
-        <!-- جدول الحسابات -->
-        <div class="table-responsive">
+        <!-- زر طباعة / حفظ PDF -->
+        <div style="margin-top: 15px;">
+            <button id="btnDownloadPDF" class="btn-pdf">🖨️ طباعة / حفظ الحسابات PDF</button>
+        </div>
+
+        <!-- عرض الحسابات المتجاوب للموبايل والحاسبة -->
+        <div id="pdfArea">
             <table>
                 <thead>
                     <tr id="tableHeader">
@@ -244,6 +327,11 @@
                 </tbody>
             </table>
         </div>
+    </div>
+
+    <!-- قسم الحقوق البرمجية -->
+    <div class="footer-credits">
+        By: <span>Komail Nabeel</span> / B.M.T Of Anesthesia & ICU / Web development
     </div>
 
 </div>
@@ -374,7 +462,7 @@
                 let actionsTd = '';
                 if (currentUser && currentUser.role === 'owner') {
                     actionsTd = `
-                        <td>
+                        <td class="action-cell" data-label="الإجراءات">
                             <button class="btn-edit" onclick="openEditModal('${id}', '${data.date}', ${data.income}, ${data.driverFee}, ${data.workerFee || 0}, ${data.expenses}, '${data.notes || ''}')">تعديل</button>
                             <button class="btn-delete" onclick="deleteRecord('${id}')">حذف</button>
                         </td>
@@ -382,13 +470,13 @@
                 }
 
                 row.innerHTML = `
-                    <td>${data.date}</td>
-                    <td>${data.income.toLocaleString()}</td>
-                    <td>${data.driverFee.toLocaleString()}</td>
-                    <td>${(data.workerFee || 0) > 0 ? data.workerFee.toLocaleString() : 'X'}</td>
-                    <td>${data.expenses > 0 ? data.expenses.toLocaleString() : 'X'}</td>
-                    <td><strong>${data.netProfit.toLocaleString()}</strong></td>
-                    <td>${data.notes || '-'}</td>
+                    <td data-label="تاريخ اليوم">${data.date}</td>
+                    <td data-label="وارد الحمل">${data.income.toLocaleString()} د.ع</td>
+                    <td data-label="أجور السائق">${data.driverFee.toLocaleString()} د.ع</td>
+                    <td data-label="أجور العامل">${(data.workerFee || 0) > 0 ? data.workerFee.toLocaleString() + ' د.ع' : 'X'}</td>
+                    <td data-label="المصرفيات">${data.expenses > 0 ? data.expenses.toLocaleString() + ' د.ع' : 'X'}</td>
+                    <td data-label="الباقي (الصافي)"><strong>${data.netProfit.toLocaleString()} د.ع</strong></td>
+                    <td data-label="ملاحظات">${data.notes || '-'}</td>
                     ${actionsTd}
                 `;
                 tableBody.appendChild(row);
@@ -443,6 +531,11 @@
         } catch (e) {
             alert("حدث خطأ أثناء حفظ التعديل: " + e.message);
         }
+    });
+
+    // دالة طباعة/حفظ PDF المباشرة
+    document.getElementById('btnDownloadPDF').addEventListener('click', () => {
+        window.print();
     });
 </script>
 
